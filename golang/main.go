@@ -2,85 +2,63 @@ package main
 
 import (
 	"fmt"
-	"sync"
+	"log"
+	"net/http"
 
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/showwin/speedtest-go/speedtest"
 )
 
-func printSpeeds(server *speedtest.Server, i int, waitGroup *sync.WaitGroup) {
-	//build up the info about a server using the attached functions
-	server.TestAll()
+// create prometheus metrics
+var dlSpeedMetric = promauto.NewGauge(prometheus.GaugeOpts{
+	Name: "download_speed", Help: "Most recent download speed measured by speedtest cli"})
 
-	//once this function has finished running, decrement the wait group counter
-	defer waitGroup.Done()
-	//Print out representation of server
-	fmt.Printf("Server %v:\n", i)
-	fmt.Printf("\t%v\n", server.String())
-	fmt.Printf("\tDowload Speed: %v\n", server.DLSpeed)
-	fmt.Printf("\tUpload Speed: %v\n", server.ULSpeed)
-	fmt.Printf("\tLatency: %v\n", server.Latency)
-	fmt.Println()
+func recordMetrics() {
+	go func() {
+
+		//run a loop forever
+		for {
+			//Declare a new speed tester
+			var speedtestClient = speedtest.New()
+
+			//Debug: print out something about the user
+			//fmt.Println("Debug: User ISP = " + user.Isp)
+
+			//Fetch a list of servers, ordered by nearest geographical location.
+			//note, if using a VPN, the nearest geographical server will be in relation to the VPN server.
+			serverList, err := speedtestClient.FetchServers()
+
+			//Test for an error
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			//Take the first server in the list
+			nearestServer := serverList[0]
+
+			//test the server
+			nearestServer.TestAll()
+
+			//set the gauge values for prometheus to scrape
+			dlSpeedMetric.Set(nearestServer.DLSpeed)
+			fmt.Println("DEBUG: downloadSpeed = " + fmt.Sprintf("%f", nearestServer.DLSpeed))
+
+			//wait a bit so we don't spam the test server.
+			//time.Sleep(60 * time.Second)
+		}
+	}()
 }
 
 func main() {
 
-	//Declare a new speed tester
-	var speedtestClient = speedtest.New()
+	//call the function to update the gauge
+	recordMetrics()
+	fmt.Println("registered metric")
 
-	//Find out stuff about the user
-	user, err := speedtestClient.FetchUserInfo()
-
-	if err != nil {
-		fmt.Println("ERROR Found:")
-		fmt.Println(err)
-	}
-
-	//Debug: print out something about the user
-	fmt.Println("Debug: User ISP = " + user.Isp)
-
-	//Fetch a list of servers, ordered by nearest geographical location
-	serverList, err := speedtestClient.FetchServers()
-
-	//Test for an error
-	if err != nil {
-		fmt.Println("ERROR Found:")
-		fmt.Println(err)
-	}
-
-	//Debug: Printg out length of list of returned servers
-	fmt.Printf("Debug: number of servers found = %v\n", serverList.Len())
-
-	//Take the first server in the list
-	//nearestServer := serverList[0]
-
-	//create a wait group to allow goroutines to create threads of work
-	var waitGroup sync.WaitGroup
-
-	//loop through the servers in the returned server list
-	for i, server := range serverList {
-
-		// //build up the info about a server using the attached functions
-		// server.TestAll()
-
-		// //Print out JSON representation of server
-		// fmt.Printf("Server %v:\n", i)
-		// fmt.Printf("\t%v\n", server.String())
-		// fmt.Printf("\tDowload Speed: %v\n", server.DLSpeed)
-		// fmt.Printf("\tUpload Speed: %v\n", server.ULSpeed)
-		// fmt.Printf("\tLatency: %v\n", server.Latency)
-		// fmt.Println()
-
-		//increment the wait group counter
-		waitGroup.Add(1)
-
-		//call a function that will start in its own goroutine
-		go printSpeeds(server, i, &waitGroup)
-
-		if i >= 4 {
-			break
-		}
-	}
-
-	//close the wait group
-	waitGroup.Wait()
+	//create the /metrics endpoint for prometheus
+	http.Handle("/metrics", promhttp.Handler())
+	fmt.Println("Beginning to serve on port :8080")
+	http.ListenAndServe(":8080", nil)
 }
