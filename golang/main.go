@@ -60,5 +60,5 @@ func main() {
 	//create the /metrics endpoint for prometheus
 	http.Handle("/metrics", promhttp.Handler())
 	fmt.Println("Beginning to serve on port :8080")
-	http.ListenAndServe(":8080", nil)
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }
