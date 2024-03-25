@@ -1,19 +1,20 @@
 version: '3'
 services:
   speedtest:
-    build:
-      context: .
+    build: 
+      context: ./golang
     ports: 
       - "8081:8081"
     networks:
       - theNet
   
   Prometheus:
-    image: prom/prometheus:v2.50.0-rc.0
-    ports:
-      - "9090:9090"
+    image: prom/prometheus:v2.51.0-dedupelabels
     volumes:
       - prometheus_data:/prometheus
+      - ./prometheus/:/etc/prometheus/
+    ports:
+      - "9090:9090"
     networks:
       - theNet
 

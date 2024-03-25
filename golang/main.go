@@ -18,25 +18,26 @@ var dlSpeedMetric = promauto.NewGauge(prometheus.GaugeOpts{
 func recordMetrics() {
 	go func() {
 
+		//Declare a new speed tester
+		var speedtestClient = speedtest.New()
+
+		//Debug: print out something about the user
+		//fmt.Println("Debug: User ISP = " + user.Isp)
+
+		//Fetch a list of servers, ordered by nearest geographical location.
+		//note, if using a VPN, the nearest geographical server will be in relation to the VPN server.
+		serverList, err := speedtestClient.FetchServers()
+
+		//Test for an error
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		//Take the first server in the list
+		nearestServer := serverList[0]
+
 		//run a loop forever
 		for {
-			//Declare a new speed tester
-			var speedtestClient = speedtest.New()
-
-			//Debug: print out something about the user
-			//fmt.Println("Debug: User ISP = " + user.Isp)
-
-			//Fetch a list of servers, ordered by nearest geographical location.
-			//note, if using a VPN, the nearest geographical server will be in relation to the VPN server.
-			serverList, err := speedtestClient.FetchServers()
-
-			//Test for an error
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			//Take the first server in the list
-			nearestServer := serverList[0]
 
 			//test the server
 			nearestServer.TestAll()
@@ -45,8 +46,8 @@ func recordMetrics() {
 			dlSpeedMetric.Set(nearestServer.DLSpeed)
 			fmt.Println("DEBUG: downloadSpeed = " + fmt.Sprintf("%f", nearestServer.DLSpeed))
 
-			//wait a bit so we don't spam the test server.
-			//time.Sleep(60 * time.Second)
+			//reset the context of the nearest server to prevent memory leak
+			nearestServer.Context.Reset()
 		}
 	}()
 }
