@@ -1,0 +1,19 @@
+#This override file should be used to specify a user defined
+#location for all the data stored by this project.
+#To use it, uncomment all lines (starting with volumes:) and
+#change the "device" value to the path of your chosen
+#directory or mounted file system.
+
+#volumes:
+#  prometheus_data:
+#    driver: local
+#    driver_opts:
+#      o: bind
+#      type: none
+#      device: /path/to/directory
+#  grafana_data:
+#    driver: local
+#    driver_opts:
+#      o: bind
+#      type: none
+#      device: /path/to/directory
