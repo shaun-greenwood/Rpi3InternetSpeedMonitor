@@ -77,7 +77,7 @@
             "values": false
           },
           "text": {
-            "valueSize": 120
+            "valueSize": 100
           },
           "textMode": "value",
           "wideLayout": true
@@ -100,6 +100,190 @@
         ],
         "transparent": true,
         "type": "stat"
+      },
+      {
+        "type": "timeseries",
+        "gridPos": {
+          "x": 0,
+          "y": 0,
+          "w": 12,
+          "h": 8
+        },
+        "datasource": "DownloadSpeedDashboard",
+        "id": 2,
+        "targets": [
+          {
+            "refId": "A",
+            "expr": "download_speed",
+            "range": true,
+            "instant": false,
+            "datasource": "DownloadSpeedDashboard",
+            "editorMode": "builder",
+            "legendFormat": "__auto",
+            "useBackend": false,
+            "disableTextWrap": false,
+            "fullMetaSearch": false,
+            "includeNullMetadata": true
+          }
+        ],
+        "transparent": true,
+        "options": {
+          "tooltip": {
+            "mode": "single",
+            "sort": "none"
+          },
+          "legend": {
+            "showLegend": false,
+            "displayMode": "list",
+            "placement": "bottom",
+            "calcs": []
+          },
+          "timezone": [
+            "Asia/Nicosia"
+          ]
+        },
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "smooth",
+              "barAlignment": 0,
+              "lineWidth": 3,
+              "fillOpacity": 75,
+              "gradientMode": "opacity",
+              "spanNulls": false,
+              "insertNulls": false,
+              "showPoints": "auto",
+              "pointSize": 5,
+              "stacking": {
+                "mode": "none",
+                "group": "A"
+              },
+              "axisPlacement": "auto",
+              "axisLabel": "",
+              "axisColorMode": "text",
+              "axisBorderShow": false,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "axisCenteredZero": false,
+              "hideFrom": {
+                "tooltip": false,
+                "viz": false,
+                "legend": false
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              },
+              "axisGridShow": false
+            },
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "value": 20,
+                  "color": "#EAB839"
+                },
+                {
+                  "value": 80,
+                  "color": "green"
+                }
+              ]
+            },
+            "unit": "Mbits",
+            "min": 0,
+            "max": 110
+          },
+          "overrides": []
+        }
+      },
+      {
+        "type": "gauge",
+        "gridPos": {
+          "x": 0,
+          "y": 0,
+          "w": 12,
+          "h": 8
+        },
+        "datasource": "DownloadSpeedDashboard",
+        "id": 3,
+        "targets": [
+          {
+            "refId": "A",
+            "expr": "download_speed",
+            "range": true,
+            "instant": false,
+            "datasource": "DownloadSpeedDashboard",
+            "editorMode": "builder",
+            "legendFormat": "__auto",
+            "useBackend": false,
+            "disableTextWrap": false,
+            "fullMetaSearch": false,
+            "includeNullMetadata": true
+          }
+        ],
+        "transparent": true,
+        "options": {
+          "reduceOptions": {
+            "values": false,
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": ""
+          },
+          "orientation": "auto",
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true,
+          "sizing": "auto",
+          "minVizWidth": 75,
+          "minVizHeight": 75
+        },
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "value": 20,
+                  "color": "#EAB839"
+                },
+                {
+                  "value": 80,
+                  "color": "green"
+                }
+              ]
+            },
+            "color": {
+              "mode": "thresholds"
+            },
+            "unit": "Mbits",
+            "min": 0,
+            "max": 110
+          },
+          "overrides": []
+        },
+        "pluginVersion": "10.2.4"
       }
     ],
     "refresh": "5s",

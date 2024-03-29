@@ -30,7 +30,10 @@ This project was designed to be run in kiosk mode on a Raspberry Pi 3 with a 3.5
 
 If you would like to get the kiosk running on your 3.5 inch screen, run the following command:
 
-`$ chromium-browser "http://localhost:3000/d/downloadSpeed/downloadspeed?orgId=1&refresh=5s&viewPanel=1&kiosk" --kiosk --window-size=320,280 &`
+`$ chromium-browser "http://localhost:3000/d/downloadSpeed?orgId=1&refresh=5s&viewPanel=1&kiosk" --kiosk --window-size=320,280 &`
+
+
+In the url of the command above, there is a section that says panel=1.  There are two other panels you could choose from.  Use panel=2 for a time series line graph.  Use panel=3 for a guage.
 
 If you would like to view the dashboard from any other device on the same network you can use:
 
