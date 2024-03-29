@@ -30,7 +30,7 @@
               "mode": "thresholds"
             },
             "mappings": [],
-            "max": 110,
+            "max": 50,
             "min": 0,
             "thresholds": {
               "mode": "absolute",
@@ -49,11 +49,12 @@
                 },
                 {
                   "color": "green",
-                  "value": 70
+                  "value": 35
                 }
               ]
             },
-            "unit": "Mbits"
+            "unit": "Mbits",
+            "decimals": 0
           },
           "overrides": []
         },
