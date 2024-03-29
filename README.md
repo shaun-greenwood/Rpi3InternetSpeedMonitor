@@ -30,11 +30,11 @@ This project was designed to be run in kiosk mode on a Raspberry Pi 3 with a 3.5
 
 If you would like to get the kiosk running on your 3.5 inch screen, run the following command:
 
-`$ chromium-browser http://localhost:3000 --kiosk --window-size=480,320`
+`$ chromium-browser "http://localhost:3000/d/downloadSpeed/downloadspeed?orgId=1&refresh=5s&viewPanel=1&kiosk" --kiosk --window-size=320,280 &`
 
 If you would like to view the dashboard from any other device on the same network you can use:
 
-`http://[ip of pi]:3000`
+`http://[ip of pi]:3000/d/downloadSpeed`
 
 ## Golang Internet Speed Test
 I used the speed test go package from showwin on github to create this speed test. The following two resources were invaluable in understanding how to use the package:

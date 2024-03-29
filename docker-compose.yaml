@@ -7,6 +7,7 @@ services:
       - "8081:8081"
     networks:
       - theNet
+    restart: always
   
   Prometheus:
     image: prom/prometheus:v2.51.0-dedupelabels

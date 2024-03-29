@@ -4,6 +4,8 @@
 #change the "device" value to the path of your chosen
 #directory or mounted file system.
 
+version: '3'
+
 #volumes:
 #  prometheus_data:
 #    driver: local

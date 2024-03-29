@@ -98,7 +98,6 @@
             "useBackend": false
           }
         ],
-        "title": "Download Speed",
         "transparent": true,
         "type": "stat"
       }
@@ -116,7 +115,7 @@
     "timepicker": {},
     "timezone": "",
     "title": "downloadSpeed",
-    "uid": "f7811390-8143-4fa1-bd22-30991f32808c",
+    "uid": "downloadSpeed",
     "version": 2,
     "weekStart": ""
   }
