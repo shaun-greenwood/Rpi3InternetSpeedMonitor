@@ -2,38 +2,64 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"net/http"
 
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/showwin/speedtest-go/speedtest"
 )
 
+// create prometheus metrics
+var dlSpeedMetric = promauto.NewGauge(prometheus.GaugeOpts{
+	Name: "download_speed", Help: "Most recent download speed measured by speedtest cli"})
+
+func recordMetrics() {
+	go func() {
+
+		//Declare a new speed tester
+		var speedtestClient = speedtest.New()
+
+		//Debug: print out something about the user
+		//fmt.Println("Debug: User ISP = " + user.Isp)
+
+		//Fetch a list of servers, ordered by nearest geographical location.
+		//note, if using a VPN, the nearest geographical server will be in relation to the VPN server.
+		serverList, err := speedtestClient.FetchServers()
+
+		//Test for an error
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		//Take the first server in the list
+		nearestServer := serverList[0]
+
+		//run a loop forever
+		for {
+
+			//test the server
+			nearestServer.TestAll()
+
+			//set the gauge values for prometheus to scrape
+			dlSpeedMetric.Set(nearestServer.DLSpeed)
+			fmt.Println("DEBUG: downloadSpeed = " + fmt.Sprintf("%f", nearestServer.DLSpeed))
+
+			//reset the context of the nearest server to prevent memory leak
+			nearestServer.Context.Reset()
+		}
+	}()
+}
+
 func main() {
 
-	//Declare a new speed tester
-	var speedtestClient = speedtest.New()
+	//call the function to update the gauge
+	recordMetrics()
+	fmt.Println("registered metric")
 
-	//Fetch a list of servers, ordered by nearest geographical location
-	serverList, err := speedtestClient.FetchServers()
-
-	//Test for an error
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	//Debug: Printg out length of list of returned servers
-	fmt.Println(serverList.Len())
-
-	//Take the first server in the list
-	nearestServer := serverList[0]
-
-	//Debug: Print out something about the server chosen
-	fmt.Println(nearestServer.Distance)
-
-	//The download speed will be calculated and stored in the Sserver object for us to call later
-	nearestServer.DownloadTest()
-
-	//Print out the download speed from this server
-	fmt.Println(nearestServer.DLSpeed)
-
-	//Test to see if this stuff works
-	fmt.Printf("This is a test!\n")
+	//create the /metrics endpoint for prometheus
+	http.Handle("/metrics", promhttp.Handler())
+	fmt.Println("Beginning to serve on port :8080")
+	log.Fatal(http.ListenAndServe(":8081", nil))
 }
