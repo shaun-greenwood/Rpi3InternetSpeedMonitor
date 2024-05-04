@@ -7,7 +7,7 @@ services:
       - "8081:8081"
     networks:
       - theNet
-    restart: always
+    restart: unless-stopped
   
   Prometheus:
     image: prom/prometheus:v2.51.0-dedupelabels
@@ -19,6 +19,7 @@ services:
       - "9090:9090"
     networks:
       - theNet
+    restart: unless-stopped
 
   Grafana:
     image: grafana/grafana:10.2.4
@@ -33,6 +34,7 @@ services:
       - ./grafana/provisioning:/etc/grafana/provisioning
     networks:
       - theNet
+    restart: unless-stopped
 
 networks:
   theNet: {}
